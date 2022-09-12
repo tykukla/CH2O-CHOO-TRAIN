@@ -6,7 +6,7 @@ The model computs zonal-mean climate and mineral weathering fields and feeds the
 ## Running the model
 The model is coded in R ([R download](https://cran.r-project.org/)) and designed to run in RStudio ([RStudio download](https://www.rstudio.com/products/rstudio/download/)). If you are new to R, consider searching for a guide to downloading R and RStudio on Google or YouTube.  
 
-The easiest way to get started with the model is to click the green **CODE** button at the top of the page, then click **Download ZIP**. Unzip (or 'extract') the downloaded file. Then open 'CODE_DISTRIBUTE.Rproj' or any specific '.R' file in RStudio. 
+The easiest way to get started with the model is to click the green **CODE** button at the top of the page, then click **Download ZIP**. Unzip (or 'extract') the downloaded file. Then open 'CODE_DISTRIBUTE.Rproj' or any specific '.R' file in RStudio. Running the code through the .Rproj file ensures that the required packages (from the 'renv' directory) are loaded using versions that work with the code. At time of writing, we are not aware of any conflicts with more recent package updates.
 
 ### Primary user scripts
 The two most important model scripts are found in the 'RUN' directory.
