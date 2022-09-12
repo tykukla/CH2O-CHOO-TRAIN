@@ -1,0 +1,125 @@
+---------------------------------
+- CH2O-CHO Simulation Log Sheet -
+---------------------------------
+MEBM Program: MEBM_v2.0
+Carbon cycle Program: 
+Run by: Dr. Test Run
+Run name: ExampleRunco2-500_glwx-0_m-0_iter-3
+Run Start Time: 2022-09-08 16:45:32
+Run duration: 81 min and 50 sec
+Run file path: C:/Users/tkukl/OneDrive/Documents/MEBM/CODE_DISTRIBUTE/Example_Results
+
+---- CH20-CHO TRAIN mode:
+Simulation mode: transient
+
+---- Input files:
+Land fraction file: ModernGeo_dataframe_2deg.RDS
+pCO2 file: InterpCO2_Aug2018.txt
+Seawater values file: seawater values over time_interp.txt
+Volcanism file: Berner Volcanism Interp.txt
+
+
+---------------------------------
+MEBM initialization -------------
+---------------------------------
+
+------------------ Grid setup ------------------
+nNodes =  100
+xin min =  -0.999999
+xin max =  0.999999
+Index of landfrac data from list: ModernGeo_dataframe_2deg.RDS
+Right boundary condition flag =  0
+Left boundary condition flag =  0
+
+--------------- Global constants ---------------
+Earth's radius [m] =  6370000
+Diffusivity coefficient [m2 s-1] =  1060000
+Solar constant (Q0) [W m-2] =  338.5
+OLR response constant (B0) [W m-2 degC-1] =  3.65
+OLR constant depending on pCO2 (A0) [W m-2 degC-1] =  213.399786097867
+
+-------------- Climate constants ---------------
+Modern pCO2 for A0 calc [ppm] =  280
+Relative humidity [0-1] =  0.8
+Budyko omega [non-dimensional; (global avg=2.6)] =  3.5
+
+-------------------- Albedo --------------------
+Albedo formulation =  step
+Ice threshold [degC] =  -5
+Ice albedo [0-1] =  0.78
+Land albedo [0-1] =  0.2
+Ocean albedo [0-1] =  0.13
+
+---------------- Fixed constants ---------------
+These are values that cannot be accessed by the log sheet, but the value at time of writing is listed for reference.
+Gross Moist Stability [J kg-1] = 1.5e4
+Approximate hadley cell extent = 15 degrees
+Smoothness of hadley transition coefficient (xw) = 0.15
+Constants for E/P partitioning --- 
+--- Drag coefficient (Ch) = 1.5e-3
+--- LW feedback at surface [W m-2 K-1] = 0
+--- Wind speed parameterization [m s-1] = 4+abs(sin(pi*x/1.5))*4
+
+
+---------------------------------
+Carbon cycle initialization -----
+---------------------------------
+
+------------ Chemistry setup vectors -----------
+Age for geochem initialization =  0
+
+Atmospheric pCO2 [ppm] =  500
+
+Ca concentration marine [mol/kg] =  1e-08
+
+Mg concentration marine [mol/kg] =  5.3e-08
+
+Volcanic degassing scalar [ ] =  1
+
+Global temperature [degC] =  22.0451
+
+------------- CLiBeSO domain setup -------------
+Model run duration [years] =  1e+06
+timestep [years] =  5000
+Perturbation start time [year] =  250000
+Perturbation end time [year] =  450000
+Mass of carbon injected [moles C] =  0
+Ocean volume [L] =  1.4e+21
+Deep ocean temperature [degC] =  15.2297
+Ocean salinity [kg/L] =  1.035
+
+--------------- Carbonate system ---------------
+Initial ocean pH =  8.2
+Initial calcite saturation state =  8.52255285601762e-06
+Initial RCO2 =  1
+Initial DIC [moles] =  3393227735196619264
+Initial Alkalinity [moles] =  3529397715355829248
+
+----------------- Carbon fluxes ----------------
+Background volcanic flux [mol/yr] =  8e+12
+Carbonate weathering flux [mol/yr] =  1.2e+13
+Carbonate burial flux [mol/yr] =  2e+13
+Organic carbon weathering flux [mol/yr] =  8e+12
+Organic carbon burial flux [mol/yr] =  8e+12
+
+---------------- Carbon isotopes ---------------
+DIC d13C [per mille] =  0
+d13C of weathered carbonate [per mille] =  0
+d13C of weathered organic carbon [per mille] =  -22
+d13C of volcanism [per mille] =  -5
+Inorganic - organic cap delta [per mille] =  27
+
+-------------- P and S reservoirs --------------
+Initial sulfur reservoir size [mol] =  5e+18
+Initial phosphate reservoir size [mol] =  3.1e+15
+
+
+---------------------------------
+User Notes ----------------------
+---------------------------------
+This is a test run. This note will be stored in the log file. I like to use the note to jog my memory of why I am conducting this specific run
+
+
+************************************************
+************************************************
+---- end of log file
