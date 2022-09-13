@@ -1,7 +1,7 @@
 # The CH2O-CHOO TRAIN 
 [![DOI](https://zenodo.org/badge/535833456.svg)](https://zenodo.org/badge/latestdoi/535833456)
 
-The **C**arbon-**H<sub>2</sub>O** **C**oupled Hydr**O**l**O**gical model for **T**errestrial **R**unoff **A**nd **IN**solation (**CH2O-CHOO TRAIN**) is an Earth System model for climate, weathering, and the long-term carbon cycle. 
+The **C**arbon-**H<sub>2</sub>O** **C**oupled Hydr**O**l**O**gical model with **T**errestrial **R**unoff **A**nd **IN**solation (**CH2O-CHOO TRAIN**) is an Earth System model for climate, weathering, and the long-term carbon cycle. 
 
 The model computs zonal-mean climate and mineral weathering fields and feeds these results to a global model for the long-term ocean-atmosphere inorganic carbon inventory.
 
