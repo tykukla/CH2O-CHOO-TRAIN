@@ -24,7 +24,7 @@ If the CH2O-CHOO-TRAIN_RUN.R file is executed with no other changes, the code wi
 
 ## CH2O-CHOO TRAIN Publications
 1. Kukla, T., Ibarra, D.E., Lau, K.V., Rugenstein, J.K.C. (Submitted). All aboard! Earth system investigations with the CH2O-CHOO TRAIN.
-2. Kukla, T., Lau, K.V., Ibarra, D.E., Rugenstein, J.K.C. (Upcoming). Climate determinism on million-year timescales.
+2. Kukla, T., Lau, K.V., Ibarra, D.E., Rugenstein, J.K.C. (Upcoming). Deterministic icehouse and greenhouse climates on million-year timescales.
 
 ### Key references
 This model is based on previous energy balance climate model, weathering, and carbon cycling work, including: 
