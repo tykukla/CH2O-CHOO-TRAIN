@@ -3,7 +3,7 @@
 
 The **C**arbon-**H<sub>2</sub>O** **C**oupled Hydr**O**l**O**gical model with **T**errestrial **R**unoff **A**nd **IN**solation (**CH2O-CHOO TRAIN**) is an Earth System model for climate, weathering, and the long-term carbon cycle. 
 
-The model computs zonal-mean climate and mineral weathering fields and feeds these results to a global model for the long-term ocean-atmosphere inorganic carbon inventory.
+The model computes zonal-mean climate and mineral weathering fields and feeds these results to a global model for the long-term ocean-atmosphere inorganic carbon inventory.
 
 ## Running the model
 The model is coded in R ([R download](https://cran.r-project.org/)) and designed to run in RStudio ([RStudio download](https://www.rstudio.com/products/rstudio/download/)). If you are new to R, consider searching for a guide to downloading R and RStudio on Google or YouTube.  
