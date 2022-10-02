@@ -5,6 +5,8 @@ The **C**arbon-**H<sub>2</sub>O** **C**oupled Hydr**O**l**O**gical model with **
 
 The model computes zonal-mean climate and mineral weathering fields and feeds these results to a global model for the long-term ocean-atmosphere inorganic carbon inventory.
 
+See our [preprint describing the model](https://eartharxiv.org/repository/view/3614/).
+
 ## Running the model
 The model is coded in R ([R download](https://cran.r-project.org/)) and designed to run in RStudio ([RStudio download](https://www.rstudio.com/products/rstudio/download/)). If you are new to R, consider searching for a guide to downloading R and RStudio on Google or YouTube.  
 
@@ -23,8 +25,8 @@ There is a README file in most subdirectories to explain each directory's conten
 If the CH2O-CHOO-TRAIN_RUN.R file is executed with no other changes, the code will output the results in the 'Example_Results' directory. The 'figures' folder in this directory is created from 'PLOT_RESULTS.R' in the 'PROCESS' directory.
 
 ## CH2O-CHOO TRAIN Publications
-1. Kukla, T., Ibarra, D.E., Lau, K.V., Rugenstein, J.K.C. (Submitted). All aboard! Earth system investigations with the CH2O-CHOO TRAIN.
-2. Kukla, T., Lau, K.V., Ibarra, D.E., Rugenstein, J.K.C. (Upcoming). Deterministic icehouse and greenhouse climates on million-year timescales.
+1. Kukla, T., Ibarra, D.E., Lau, K.V., Rugenstein, J.K.C. (Preprint). All aboard! Earth system investigations with the CH2O-CHOO TRAIN. DOI:10.31223/X5ND26.
+2. Kukla, T., Lau, K.V., Ibarra, D.E., Rugenstein, J.K.C. (Upcoming). Deterministic icehouse and greenhouse climates in Earth history.
 
 ### Key references
 This model is based on previous energy balance climate model, weathering, and carbon cycling work, including: 
