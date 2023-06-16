@@ -51,6 +51,8 @@ paramfunc <- function(remove=NA) {
     # 3 = Original COPSE formulation (Bergman et al., 2004)
     # 4 = Shields and Mills 2017
     # 5 = Payne and Kump 2007
+    # 6 = arbitrary temp-dependent organic carbon burial feedback 
+    #     [6 requires arbFB.n, positive values = negative feedback w/temp and vice versa]
     PO4.form = 1, # Determines what formulation of phosphorus burial/organic carbon burial to use
     Fwp.i = 2.4e10, # Assumes initial burial flux is 250x less than Fborg (initial value in CLiBeSO: 4.7e10)
     Fbp.i = 2.4e10, # Assumes initial burial flux is 250x less than Fborg (initial value in CLiBeSO: 4.7e10)
@@ -58,6 +60,7 @@ paramfunc <- function(remove=NA) {
     carb.P = 0.21, # P derived from carbonate weathering
     org.P = 0.21, # P derived from organic carbon weathering
     PO4.n = 3, # Exponential describing dependence of Fborg on [PO4] (range from 2-3) (Van Cappellen and Ingall 1994)
+    arbFB.n = 0.2,  # (used w/ option 6) Exponent for Fborg feedback w/ temperature (positive is more Fborg w/ warming, negative is less)
     
     # Parameters used in MC 2014 Function
     keff.ref = 8.7e-6, # mol/m2/yr (reference reaction rate) (from Maher and Chamberlain SI Table S1)
@@ -246,7 +249,7 @@ soilCO2func <- function(pCO2,prod.max=2,pCO2.min=100) {
   RCO2.soil
 }
 
-# Arrhenius Function #### NEED TO CHANGE THIS TO INITIAL TEMPERATURE IN BIN
+# Arrhenius Function 
 arrhenius <- function(Temp.C,Ea.in){
   R <- 8.314 # J/K/mol
   Ea.used <- Ea.in*1000
@@ -265,69 +268,58 @@ MCfunc.trans <- function(pCO2,q0,q,Ea=p['Ea'],Ts=p['Ts'],keff.ref=p['keff.ref'],
   RCO2 <- pCO2/pCO2.i
   
   if (soilCO2.use==1){
-    RCO2.soil <- soilCO2func(pCO2=pCO2)
+    RCO2.soil <- soilCO2func(pCO2=pCO2, pCO2.init = pCO2.i)
+    RCO2.init.mod.soil <- soilCO2func(pCO2=pCO2.i, pCO2.init = pCO2.modern)
   }
   if (soilCO2.use==2){
     RCO2.soil <- RCO2
+    RCO2.init.mod.soil <- pCO2.i/pCO2.modern
   }
   if (soilCO2.use==3){
     RCO2.soil <- RCO2*mag.factor
+    RCO2.init.mod.soil <- (pCO2.i/pCO2.modern) * mag.factor
   }
   
   m.init <- p['m'] # g/mol (molar mass) (from Maher and Chamberlain SI Table S1)
   A.init <- p['A'] # m2/g (specific surface area) (from Maher and Chamberlain SI Table S1)
+  keff.init <- keff.ref*arrhenius(Temp.C=Temp.init,Ea.in=Ea)
+  Rn.max.init <- p['Rn.max.ref']*(keff.init/keff.ref)
+  fw.init <- 1/(1+m.init*A.init*keff.init*Ts)
+  Ceq.init <- ((RCO2.init.mod.soil)^(0.316))*p['Ceq'] #1000
   
-  Rn.max <- p['Rn.max.ref']*(keff.ref/8.7e-6) # Maximum net reaction rate scaled to keff (umol/L/yr); 8.7e-6 is the reference reaction rate in MC14
+  # timeslice keff and rn.max
+  keff <- keff.ref*arrhenius(Temp.C=Temperature,Ea.in=Ea)
+  Rn.max <- p['Rn.max.ref']*(keff/keff.ref)
+  fw <- 1/(1+p['m']*p['A']*keff*Ts)
   
   # Calculation Initial Concentration
   # changed Dw0 to be scaled to the initial temperature
-  Dw0 <- ((p['L.phi']*Rn.max*(1/(1+m.init*A.init*keff.ref*Ts)))/p['Ceq'])*arrhenius(Temp.C=Temp.init,Ea.in=Ea)
+  Dw0 <- p['L.phi']*Rn.max.init*fw.init/Ceq.init
   Conc0 <- p['Ceq']*(((exp(1)^2)*Dw0/q0)/(1+(exp(1)^2)*Dw0/q0))
   
   Ceq <- ((RCO2.soil)^(0.316))*p['Ceq'] #1000
-  fw <- 1/(1+p['m']*p['A']*keff.ref*Ts)
-  Dw <- (p['L.phi']*Rn.max*fw/Ceq)*arrhenius(Temp.C=Temperature,Ea.in=Ea)
+  Dw <- p['L.phi']*Rn.max*fw/Ceq
   Conc <- Ceq*(((exp(1)^2)*Dw/q)/(1+(exp(1)^2)*Dw/q))
   
+  # -- apply scaling for carbonate and basalt
   # Carbonate weathering
-  # Here, reaction rate terms (keff.ref.carb and p['Rn.max']) are 3 orders of magnitude higher;
-  # reference carb Ceq (p['Ceq']) is a factor of 2 greater (see Dan's email)
-  carb.reac.scale <- 10^3
+  carb.dw.scale <- 2.5    # following unpublished analysis of Ibarra and Winnick (along with power-law scaling of Bluth and Kump 1994)
   carb.Ceq.scale <- 2
-  carb.L.phi.scale <- 10
-  keff.ref.carb <- carb.reac.scale*8.7e-6 # mol/m2/yr (reference reaction rate) (from Maher and Chamberlain SI Table S1)
-  m.carb <- 270 # g/mol (molar mass) (from Maher and Chamberlain SI Table S1)
-  A.carb <- 0.1 # m2/g (specific surface area) (from Maher and Chamberlain SI Table S1)
-  
-  # Calculation Initial Concentration
-  Rn.max.carb <- (p['Rn.max.ref']*carb.reac.scale) # Maximum net reaction rate scaled to keff (umol/L/yr); 8.7e-6 is the reference reaction rate in MC14
-  Dw0.carb <- ((p['L.phi']*carb.L.phi.scale*Rn.max.carb*(1/(1+m.carb*A.carb*keff.ref.carb*Ts)))/(p['Ceq']*carb.Ceq.scale))*arrhenius(Temp.C=Temp.init,Ea.in=Ea)
-  Conc0.carb <- (p['Ceq']*carb.Ceq.scale)*(((exp(1)^2)*Dw0.carb/q0)/(1+(exp(1)^2)*Dw0.carb/q0))
-  
-  Ceq.carb <- ((RCO2.soil)^(0.316))*(p['Ceq']*carb.Ceq.scale) #1000
-  fw.carb <- 1/(1+m.carb*A.carb*keff.ref.carb*Ts)
-  Dw.carb <- (p['L.phi']*carb.L.phi.scale*Rn.max.carb*fw.carb/Ceq.carb)*arrhenius(Temp.C=Temperature,Ea.in=Ea)
+  Dw0.carb <- Dw0 * carb.dw.scale
+  Conc0.carb <- (p['Ceq']*carb.Ceq.scale) * (((exp(1)^2)*Dw0.carb/q0)/(1+(exp(1)^2)*Dw0.carb/q0))
+  Ceq.carb <- Ceq*carb.Ceq.scale
+  Dw.carb <- Dw * carb.dw.scale
   Conc.carb <- Ceq.carb*(((exp(1)^2)*Dw.carb/q)/(1+(exp(1)^2)*Dw.carb/q))
   
   # Basalt weathering
-  # Here, reaction rate terms (keff.ref.ba and p['Rn.max']) are 1 order of magnitude higher;
-  # reference basalt Ceq (p['Ceq']) is a factor of 1.25 greater (see Dan's 2017 AGU talk)
-  ba.reac.scale <- 10
-  ba.Ceq.scale <- 1.25
-  ba.L.phi.scale <- 3
-  keff.ref.ba <- ba.reac.scale*8.7e-6 # mol/m2/yr (reference reaction rate) (from Maher and Chamberlain SI Table S1)
-  m.ba <- 270 # g/mol (molar mass) (from Maher and Chamberlain SI Table S1)
-  A.ba <- 0.1 # m2/g (specific surface area) (from Maher and Chamberlain SI Table S1)
-  
-  # Calculation Initial Concentration
-  Rn.max.ba <- (p['Rn.max.ref']*ba.reac.scale) # Maximum net reaction rate scaled to keff (umol/L/yr); 8.7e-6 is the reference reaction rate in MC14
-  Dw0.ba <- ((p['L.phi']*ba.L.phi.scale*Rn.max.ba*(1/(1+m.ba*A.ba*keff.ref.ba*Ts)))/(p['Ceq']*ba.Ceq.scale))*arrhenius(Temp.C=Temp.init,Ea.in=Ea)
-  Conc0.ba <- (p['Ceq']*ba.Ceq.scale)*(((exp(1)^2)*Dw0.ba/q0)/(1+(exp(1)^2)*Dw0.ba/q0))
-  
-  Ceq.ba <- ((RCO2.soil)^(0.316))*(p['Ceq']*ba.Ceq.scale) #1000
-  fw.ba <- 1/(1+m.ba*A.ba*keff.ref.ba*Ts)
-  Dw.ba <- (p['L.phi']*ba.L.phi.scale*Rn.max.ba*fw.ba/Ceq.ba)*arrhenius(Temp.C=Temperature,Ea.in=Ea)
+  ba.dw.scale <- 3.45    
+  ba.Ceq.scale <- 1.3
+  Dw0.ba <- Dw0 * ba.dw.scale
+  Conc0.ba <- (p['Ceq']*ba.Ceq.scale) * (((exp(1)^2)*Dw0.ba/q0)/(1+(exp(1)^2)*Dw0.ba/q0))
+  Ceq.ba <- Ceq*ba.Ceq.scale
+  Dw.ba <- Dw * ba.dw.scale
   Conc.ba <- Ceq.ba*(((exp(1)^2)*Dw.ba/q)/(1+(exp(1)^2)*Dw.ba/q))
+  
   
   results <- c(q0,q,Conc0,Conc,Ceq,Dw,RCO2.soil)
   results.carb <- c(q0,q,Conc0.carb,Conc.carb,Ceq.carb,Dw.carb,RCO2.soil)
@@ -590,6 +582,11 @@ CH2OCHO = function(t,y,p){ # This function contains land "boxes"
     if (p['PO4.form']==5){ # Uses Payne and Kump 2007 formulation
       Fbp <- p['Fbp.i']*(y['PO4']/PO4.i)
       Fborg <- p['Fborg.i']*(y['PO4']/PO4.i)
+    }
+    
+    if (p['PO4.form']==6){  # Arbitrary temperature-dependent organic burial 
+      Fborg <- Fworg * (temp.i.wt/temp.a.i)^arbFB.n # (note temp.a.i is weighted surface air temp from train.tracks fxn (first timestep))
+      Fbp <- Fwp
     }
     
     # Sulfur Fluxes and associated Carbon fluxes

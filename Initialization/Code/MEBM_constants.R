@@ -5,7 +5,7 @@
 
 
 # physical constants  - no choice permitted (but feel free to change to more precise values...)
-cp <- 1004          # [J kg-1] heat cap. at const. pressure.
+cp <- 1004          # [J kg-1 K-1] heat cap. at const. pressure.
 eps <- 0.622        # [unitless] constant in specific humidity relationship (=m_v/m_d)
 # Note consider adding T dependency of Lv at some point: Lv = Rv*(T+273.15)^2*a*b/(b+T)^2
 Lv <- 2.45e6        # [J kg-1] latent heat of vaporization at 20 degC.

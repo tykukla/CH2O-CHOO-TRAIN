@@ -24,7 +24,8 @@ Wm2flux <- function(Wm2){
 # function to solve hydrologic cycle from MEBM mse output
 hydrofun <- function(temp, x, hadley_extent=15){
   # moist static energy
-  q <- rel_hum*(eps/p0)*e0*exp((a*temp)/(b+temp))       # [g kg-1] specific humidity 
+  qstar <- (eps/p0)*e0*exp((a*temp)/(b+temp))           # [g kg-1] saturation specific humidity 
+  q <- rel_hum*qstar                                    # [g kg-1] specific humidity 
   h <- cp*(temp+273.15)+Lv*q                            # [J kg-1] Moist static energy (MSE)
   flux <- -2*pi*Din*(1-xin^2)*pracma::gradient(h, xin)       # [W] poleward MSE flux
   
@@ -36,10 +37,12 @@ hydrofun <- function(temp, x, hadley_extent=15){
   # wt <- cos(pi*xin)*(1-abs(xin))
   
   # hadley cell partitioning
-  dh_gms <- 1.5e4                            # [J kg-1] gross moist stability
   heq <- max(h)                                # [J kg-1] moist static energy at the equator
+  gms_factor <- 1.06                         # 1 + percentage increase in GMS per change in heq -- 1.06 in Siler et al. 2018; 1.08 in Bonan et al. 2023 
+  ht <- gms_factor * heq                           # [J kg-1] mse in tropical upper troposphere (fit by Siler et al. 2018)
+  gms <- ht - h                              # [J kg-1] gross moist stability
   F_hc <- (1-wt)*flux                        # Hadley cell flux
-  V <- F_hc/(heq+dh_gms-h)                   # Mass transport of the hadley cell 
+  V <- F_hc/gms                   # Mass transport of the hadley cell 
   #F_hc_approx = approxfun(F_hc,xin)
   #F_hc_approx(0)
   # which(V[500:1200]==min(abs(V[500:1200]-0)))
@@ -59,14 +62,14 @@ hydrofun <- function(temp, x, hadley_extent=15){
   
   # Evaporation / Precipitation partitioning
   alpha <- Lv/461.5/(temp+273.15)^2                 # alpha parameter (from Nick Siler.. original ref?)
-  beta <- cp/Lv/alpha/q                             # beta parameter
+  beta <- cp/Lv/alpha/qstar                             # beta parameter
   RG <- 180*(1*(1-x^2)-0.4*exp(-(x/0.15)^2))    # [W m-2] made-up idealized pattern of R-G
   #%RG=170*(1*(1-x.^2));%-.4*exp(-(x./.15).^2))
   Ch <- 1.5e-3                                      # drag coefficient
   LWfb <- 0                                         # [W m-2 K-1] LW feedback at surface
   u <- 4+abs(sin(pi*x/1.5))*4                     # [m s-1] wind speed   [ #%-2.5*cos(3*asin(x)) ]
   rho_air <- 1.2                                    # air density   [ psfc./287./(T_ctrl+273.15) ]
-  Evap <- (RG*alpha+rho_air*cp*(1-rel_hum)*Ch*u)/(alpha+cp/Lv/q)  # [W m-2] evaporation
+  Evap <- (RG*alpha+rho_air*cp*(1-rel_hum)*Ch*u)/(alpha+cp/Lv/qstar)  # [W m-2] evaporation
   Prec <- Evap-divF_LH                                            # [W m-2] precipitation
   Evap <- Evap/(Lv*rho)*pi*1e7                      # [m yr-1] evaporation
   Prec <- Prec/(Lv*rho)*pi*1e7                      # [m yr-1] precipitation
